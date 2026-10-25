@@ -22,7 +22,7 @@ public class Prj1HealthUI : MonoBehaviour
     }
     private void OnEnable()
     {
-        Prj1Enemy.TakeDamage += UITakeDamage; // Setup the observer for detecting TakeDamage event
+        Weapon.TakeDamage += UITakeDamage; // Setup the observer for detecting TakeDamage event
         health = 3;
         heart1.enabled = true;
         heart2.enabled = true;
@@ -30,7 +30,7 @@ public class Prj1HealthUI : MonoBehaviour
     }
     private void OnDisable()
     {
-        Prj1Enemy.TakeDamage -= UITakeDamage; // Close the observer to prevent data leak
+        Weapon.TakeDamage -= UITakeDamage; // Close the observer to prevent data leak
     }
     // Take damage gets activated by the broadcast signal from the enemy script detecting collision
     public void UITakeDamage()

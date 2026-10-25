@@ -10,19 +10,19 @@ public class Prj1PlayerMove : MonoBehaviour
     public GameObject Player;
     private Rigidbody rb;
     private Collider hitbox;
-    // Floats
+    // Movement
     public float speed = 5f;
     private float moveX;
     private float moveY;
-    private float moveA;
+    public bool stunned = false;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Prj1Enemy.TakeDamage += PTakeDamage;
+        Weapon.TakeDamage += PTakeDamage;
         Prj1HealthUI.PlayerDeath += OnPlayerDeath;
         rb = GetComponent<Rigidbody>();
-        hitbox = GetComponent<CapsuleCollider>();
+        hitbox = GetComponent<CapsuleCollider>(); // Gets the first matching component, hit detection collider needs to be first
     }
     void OnMove(InputValue movementValue)
     {
@@ -33,19 +33,11 @@ public class Prj1PlayerMove : MonoBehaviour
     // Uses the built in input system jump for the dodge trigger.
     async void OnJump()
     {
-        speed = 20f;
         hitbox.enabled = false;
-        await waitNFrames(20);
-        //for (int i = 0; i < 12; i++)
-        //{
-        //    yield return null;
-        //}
+        speed = 20f;
+        await waitFor(20);
         hitbox.enabled = true;
-        await waitNFrames(8);
-        //for (int i = 0; i < 8; i++)
-        //{
-        //    yield return null;
-        //}
+        await waitFor(8);
         speed = 5f;
     }
     private void FixedUpdate()
@@ -57,9 +49,11 @@ public class Prj1PlayerMove : MonoBehaviour
     // Slightly moves the player in the opposite direction they moved when getting hit to prevent continuous damage
     public async void PTakeDamage()
     {
-        speed = -20;
-        await waitNFrames(10);
+        speed = -10; // push the playerbackwards, away from the enemy
+        stunned = true;
+        await waitFor(10);
         speed = 5;
+        stunned = false;
     }
     // Sends the player back to 0,0,0 in world coordinates
     public void OnPlayerDeath()
@@ -67,7 +61,7 @@ public class Prj1PlayerMove : MonoBehaviour
         Player.transform.position = new Vector3(0, 0, 0);
     }
     // Waits for a specified number of frames
-    public async Task waitNFrames(int n)
+    public async Task waitFor(int n)
     {
         for (int i = 0; i < n; i++)
         {
